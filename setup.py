@@ -1,9 +1,6 @@
 from distutils.core import setup
 import os
 
-from systemd import get_version
-
-
 # Compile the list of packages available, because distutils doesn't have
 # an easy way to do this.
 packages, data_files = [], []
@@ -26,9 +23,9 @@ for dirpath, dirnames, filenames in os.walk('systemd'):
             data_files.append(os.path.join(prefix, f))
 
 
-setup(name='python-systemd',
-      version=get_version().replace(' ', '-'),
-      description='Systemd interfaces wrapper',
+setup(name='python-systemd-dbus',
+      version='0.1.0-dev',
+      description='Systemd interfaces dbus wrapper',
       author='Wiliam Souza',
       author_email='wiliam@mandriva.com',
       url='',

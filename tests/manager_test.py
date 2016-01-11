@@ -1,12 +1,7 @@
 import unittest
 
-import signal
-import dbus
+from systemd.dbus.manager import Manager
 
-from systemd.manager import Manager
-from systemd.exceptions import SystemdError
-from systemd.unit import Unit
-from systemd.job import Job
 
 class ManagerTest(unittest.TestCase):
 

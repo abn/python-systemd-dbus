@@ -17,27 +17,29 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import dbus
-import dbus.mainloop.glib
-dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+import systemd.dbus.mainloop.glib
 
-from systemd.property import Property
-from systemd.exceptions import SystemdError
+import systemd.dbus
 
-class Socket(object):
-    """Abstraction class to org.freedesktop.systemd1.Socket interface"""
+systemd.dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+from systemd.dbus.property import Property
+from systemd.dbus.exceptions import SystemdError
+
+class Snapshot(object):
+    """Abstraction class to org.freedesktop.systemd1.Snapshot interface"""
     def __init__(self, unit_path):
-        self.__bus = dbus.SystemBus()
+        self.__bus = systemd.dbus.SystemBus()
 
         self.__proxy = self.__bus.get_object(
             'org.freedesktop.systemd1',
             unit_path,)
 
-        self.__interface = dbus.Interface(
+        self.__interface = systemd.dbus.Interface(
             self.__proxy,
-            'org.freedesktop.systemd1.Socket',)
+            'org.freedesktop.systemd1.Snapshot',)
 
-        self.__properties_interface = dbus.Interface(
+        self.__properties_interface = systemd.dbus.Interface(
             self.__proxy,
             'org.freedesktop.DBus.Properties')
 
@@ -57,3 +59,9 @@ class Socket(object):
         for key, value in properties.items():
             setattr(attr_property, key, value)
         setattr(self, 'properties', attr_property)
+
+    def remove(self):
+        try:
+            self.__interface.Remove()
+        except systemd.dbus.exceptions.DBusException, error:
+            raise SystemdError(error)

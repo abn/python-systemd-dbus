@@ -17,28 +17,30 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import dbus
-import dbus.mainloop.glib
-dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+import systemd.dbus.mainloop.glib
 
-from systemd.property import Property
-from systemd.exceptions import SystemdError
-from systemd.job import Job
+import systemd.dbus
+
+systemd.dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+from systemd.dbus.property import Property
+from systemd.dbus.exceptions import SystemdError
+from systemd.dbus.job import Job
 
 class Unit(object):
     """Abstraction class to org.freedesktop.systemd1.Unit interface"""
     def __init__(self, unit_path):
-        self.__bus = dbus.SystemBus()
+        self.__bus = systemd.dbus.SystemBus()
 
         self.__proxy = self.__bus.get_object(
             'org.freedesktop.systemd1',
             unit_path,)
 
-        self.__interface = dbus.Interface(
+        self.__interface = systemd.dbus.Interface(
             self.__proxy,
             'org.freedesktop.systemd1.Unit',)
 
-        self.__properties_interface = dbus.Interface(
+        self.__properties_interface = systemd.dbus.Interface(
             self.__proxy,
             'org.freedesktop.DBus.Properties')
 
@@ -73,7 +75,7 @@ class Unit(object):
         """
         try:
             self.__interface.KillUnit(who, mode, signal)
-        except dbus.exceptions.DBusException, error:
+        except systemd.dbus.exceptions.DBusException, error:
             print error
             raise SystemdError(error)
 
@@ -90,7 +92,7 @@ class Unit(object):
             job_path = self.__interface.Reload(mode)
             job = Job(job_path)
             return job
-        except dbus.exceptions.DBusException, error:
+        except systemd.dbus.exceptions.DBusException, error:
             raise SystemdError(error)
 
 
@@ -108,7 +110,7 @@ class Unit(object):
             job_path = self.__interface.ReloadOrRestart(mode)
             job = Job(job_path)
             return job
-        except dbus.exceptions.DBusException, error:
+        except systemd.dbus.exceptions.DBusException, error:
             raise SystemdError(error)
 
     def reload_or_try_restart(self, mode):
@@ -124,13 +126,13 @@ class Unit(object):
             job_path = self.__interface.ReloadOrTryRestart(mode)
             job = Job(job_path)
             return job
-        except dbus.exceptions.DBusException, error:
+        except systemd.dbus.exceptions.DBusException, error:
             raise SystemdError(error)
 
     def reset_failed(self):
         try:
             self.__interface.ResetFailed()
-        except dbus.exceptions.DBusException, error:
+        except systemd.dbus.exceptions.DBusException, error:
             raise SystemdError(error)        
 
     def restart(self, mode):
@@ -146,7 +148,7 @@ class Unit(object):
             job_path = self.__interface.Restart(mode)
             job = Job(job_path)
             return job
-        except dbus.exceptions.DBusException, error:
+        except systemd.dbus.exceptions.DBusException, error:
             raise SystemdError(error)
 
     def start(self, mode):
@@ -162,7 +164,7 @@ class Unit(object):
             job_path = self.__interface.Start(mode)
             job = Job(job_path)
             return job
-        except dbus.exceptions.DBusException, error:
+        except systemd.dbus.exceptions.DBusException, error:
             raise SystemdError(error)
 
     def stop(self, mode):
@@ -178,7 +180,7 @@ class Unit(object):
             job_path = self.__interface.Stop(mode)
             job = Job(job_path)
             return job
-        except dbus.exceptions.DBusException, error:
+        except systemd.dbus.exceptions.DBusException, error:
             raise SystemdError(error)
 
     def try_restart(self,mode):
@@ -194,5 +196,5 @@ class Unit(object):
             job_path = self.__interface.TryRestart(mode)
             job = Job(job_path)
             return job
-        except dbus.exceptions.DBusException, error:
+        except systemd.dbus.exceptions.DBusException, error:
             raise SystemdError(error)

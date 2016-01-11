@@ -17,22 +17,22 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import dbus
-import dbus.mainloop.glib
-dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+import systemd.dbus.mainloop.glib
 
-from systemd.property import Property
-from systemd.exceptions import SystemdError
+import systemd.dbus
+
+systemd.dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
 
 class Target(object):
     """Abstraction class to org.freedesktop.systemd1.Target interface"""
     def __init__(self, unit_path):
-        self.__bus = dbus.SystemBus()
+        self.__bus = systemd.dbus.SystemBus()
 
         self.__proxy = self.__bus.get_object(
             'org.freedesktop.systemd1',
             unit_path,)
 
-        self.__interface = dbus.Interface(
+        self.__interface = systemd.dbus.Interface(
             self.__proxy,
             'org.freedesktop.systemd1.Target',)

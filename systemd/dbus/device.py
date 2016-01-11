@@ -17,29 +17,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import systemd.dbus.mainloop.glib
-
-import systemd.dbus
-
-systemd.dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+import dbus
+import dbus.mainloop.glib
 
 from systemd.dbus.property import Property
+
+dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
 
 class Device(object):
     """Abstraction class to org.freedesktop.systemd1.Device interface"""
     def __init__(self, unit_path):
-        self.__bus = systemd.dbus.SystemBus()
+        self.__bus = dbus.SystemBus()
 
         self.__proxy = self.__bus.get_object(
             'org.freedesktop.systemd1',
             unit_path,)
 
-        self.__interface = systemd.dbus.Interface(
+        self.__interface = dbus.Interface(
             self.__proxy,
             'org.freedesktop.systemd1.Device',)
 
-        self.__properties_interface = systemd.dbus.Interface(
+        self.__properties_interface = dbus.Interface(
             self.__proxy,
             'org.freedesktop.DBus.Properties')
 
